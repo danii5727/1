@@ -1,0 +1,130 @@
+#include <iostream>
+#include "Base.h"
+#include "Car.h"
+#include "Furniture.h"
+#include "Keeper.h"
+#include "Worker.h"
+
+void displayMenu() {
+    std::cout << "\n=== Меню управления фабрикой ===\n"
+        << "1. Добавить мебель\n"
+        << "2. Добавить работника\n"
+        << "3. Добавить машину\n"
+        << "4. Показать все объекты\n"
+        << "5. Удалить объект\n"
+        << "6. Сохранить в файл\n"
+        << "7. Загрузить из файла\n"
+        << "8. Выход\n"
+        << "Выберите действие: ";
+}
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+    Keeper keeper;
+    int choice;
+
+    while (true) {
+        displayMenu();
+        std::cin >> choice;
+        std::cin.ignore();
+
+        try {
+            if (choice == 1) {
+                std::string type, color, material;
+                double height, width, depth, cost;
+
+                std::cout << "Введите тип мебели: ";
+                std::getline(std::cin, type);
+                std::cout << "Введите размеры (высота ширина глубина): ";
+                std::cin >> height >> width >> depth;
+                std::cin.ignore();
+                std::cout << "Введите цвет: ";
+                std::getline(std::cin, color);
+                std::cout << "Введите материал: ";
+                std::getline(std::cin, material);
+                std::cout << "Введите стоимость: ";
+                std::cin >> cost;
+                std::cin.ignore();
+
+                auto* furniture = new Furniture(type, height, width, depth, color, material, cost);
+                keeper.add(furniture); // Не удаляем объект, т.к. он теперь хранится в Keeper
+            }
+            else if (choice == 2) {
+                std::string name, position, address, phone;
+                double salary;
+
+                std::cout << "Введите ФИО: ";
+                std::getline(std::cin, name);
+                std::cout << "Введите должность: ";
+                std::getline(std::cin, position);
+                std::cout << "Введите зарплату: ";
+                std::cin >> salary;
+                std::cin.ignore();
+                std::cout << "Введите адрес: ";
+                std::getline(std::cin, address);
+                std::cout << "Введите телефон: ";
+                std::getline(std::cin, phone);
+
+                auto* worker = new Worker(name, position, salary, address, phone);
+                keeper.add(worker); // Не удаляем объект
+            }
+            else if (choice == 3) {
+                std::string make, model, plate;
+
+                std::cout << "Введите марку: ";
+                std::getline(std::cin, make);
+                std::cout << "Введите модель: ";
+                std::getline(std::cin, model);
+                std::cout << "Введите гос. номер: ";
+                std::getline(std::cin, plate);
+
+                auto* car = new Car(make, model, plate);
+                keeper.add(car); // Не удаляем объект
+            }
+            else if (choice == 4) {
+                std::cout << "\n=== Все объекты ===\n";
+                for (int i = 0; i < keeper.getSize(); i++) {
+                    std::cout << "\nОбъект #" << (i + 1) << ":\n";
+                    keeper.get(i)->display();
+                    std::cout << "-------------------\n";
+                }
+            }
+            else if (choice == 5) {
+                int index;
+                std::cout << "Введите номер объекта для удаления: ";
+                std::cin >> index;
+                std::cin.ignore();
+                keeper.remove(index - 1); // Удаление объекта из Keeper
+                std::cout << "Объект удален.\n";
+            }
+            else if (choice == 6) {
+                std::string filename;
+                std::cout << "Введите имя файла для сохранения: ";
+                std::cin >> filename;
+                keeper.saveToFile(filename);
+                std::cout << "Данные успешно сохранены в файл.\n";
+            }
+            else if (choice == 7) {
+                std::string filename;
+                std::cout << "Введите имя файла для загрузки: ";
+                std::cin >> filename;
+                keeper.loadFromFile(filename);
+                std::cout << "Данные успешно загружены из файла.\n";
+            }
+            else if (choice == 8) {
+                std::cout << "Программа завершена.\n";
+                break;
+            }
+            else {
+                std::cout << "Неверный выбор. Попробуйте снова.\n";
+            }
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Ошибка: " << e.what() << "\n";
+        }
+    }
+
+    return 0;
+}
+
+
